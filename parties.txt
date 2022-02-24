@@ -3,3 +3,4 @@ even_cut_pack_choose
 mmir
 pack_cut_pack_choose
 stupid
+stupid2
