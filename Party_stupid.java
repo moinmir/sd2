@@ -62,8 +62,18 @@ public class Party_stupid implements Party {
         final int districtSize = remaining.size() / numDistrictsRemaining;
         for (int i = 0; i < numDistrictsRemaining; ++i) {
             List<Block> district = new ArrayList<Block>();
+            int winning_margin = 0; // positive for us, negative for them
             for (int j = 0; j < districtSize; ++j) {
-                district.add(remaining.get(i * districtSize + j));
+                Block cur_block = remaining.get(i * districtSize + j);
+                if (!_isBeta) winning_margin += cur_block.alpha() - cur_block.beta();
+                else winning_margin += cur_block.beta() - cur_block.alpha();
+                district.add(cur_block);
+            }
+            // bad because we should actually compare the totals, not the "scores"
+            if (winning_margin < 0) {
+                List<List<Block>> even_ret = evenCut(numDistrictsRemaining - i, remaining.subList(i*districtSize, remaining.size()));
+                ret.addAll(even_ret);
+                return ret;
             }
             ret.add(district);
         }
@@ -127,22 +137,31 @@ public class Party_stupid implements Party {
         List<Block> closestWinDistrict = null;
         long furthestLossMargin = -1;
         List<Block> furthestLossDistrict = null;
+        long ourWin = Long.MAX_VALUE;
+        long oppWin = -1;
+    
         for (List<Block> district : districts) {
             long ourFavor = 0;
+            long ourVotes = 0;
+            long oppVotes = 0;
             for (Block block : district) {
                 ourFavor += _isBeta ? block.betaSwing() : -block.betaSwing();
+                ourVotes += _isBeta ? block.beta() : block.alpha();
+                oppVotes += _isBeta ? block.alpha() : block.beta();
             }
             // n.b. tiebreaks in favor of beta
-            if (ourFavor > 0 || (ourFavor == 0 && _isBeta)) {
+            if ((ourFavor > 0 || (ourFavor == 0 && _isBeta)) && ourVotes < ourWin) {
                 if (closestWinDistrict == null || closestWinMargin > ourFavor) {
                     closestWinMargin = ourFavor;
                     closestWinDistrict = district;
+                    ourWin = ourVotes;
                 }
-            } else {
+            } else if ((ourFavor < 0 || (ourFavor == 0 && !_isBeta)) && oppVotes > oppWin) {
                 // ourFavor is negative, so store the min
                 if (furthestLossDistrict == null || furthestLossMargin > ourFavor) {
                     furthestLossMargin = ourFavor;
                     furthestLossDistrict = district;
+                    oppWin = oppVotes;
                 }
             }
         }
