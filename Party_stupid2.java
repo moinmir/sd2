@@ -80,23 +80,6 @@ public class Party_stupid2 implements Party {
         return ret;
     }
 
-    // ORIGINAL VERSION
-    //     public List<List<Block>> packCut(int numDistrictsRemaining, List<Block> remaining) {
-    //     remaining = new ArrayList<Block>(remaining); // get mutability
-    //     Collections.sort(remaining, new Block.BlockComparator(false, true, !_isBeta));
-    //     // now sorted in increasing order of how many more votes the other party gets
-    //     List<List<Block>> ret = new ArrayList<List<Block>>();
-    //     final int districtSize = remaining.size() / numDistrictsRemaining;
-    //     for (int i = 0; i < numDistrictsRemaining; ++i) {
-    //         List<Block> district = new ArrayList<Block>();
-    //         for (int j = 0; j < districtSize; ++j) {
-    //             district.add(remaining.get(i * districtSize + j));
-    //         }
-    //         ret.add(district);
-    //     }
-    //     return ret;
-    // }
-
     // Make the most even districts easily possible (e.g. greedily put the districts
     // with the biggest
     // difference together)
