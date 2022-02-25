@@ -1,7 +1,8 @@
 netID,score
-even_cut_even_choose,18.156
-even_cut_pack_choose,16.343999999999994
-mmir,21.752000000000002
-pack_cut_pack_choose,14.228000000000002
-stupid,24.776
-stupid2,24.744
+even_cut_even_choose,15.979999999999997
+even_cut_pack_choose,16.846666666666668
+mmir,18.486666666666668
+pack_cut_pack_choose,15.246666666666664
+stupid,25.156666666666666
+stupid2,24.25666666666666
+stupid3,24.02666666666667

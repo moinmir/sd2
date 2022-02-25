@@ -97,7 +97,14 @@ public class Party_stupid implements Party {
         if (this._isBeta) {
 
             if (beta >= alpha) {
-                return evenCut(r, remaining);
+                List<List<Block>> evenCutRet = evenCut(r, remaining);
+                if (!checkWin(evenCutRet)) {
+                    return packCut(r, remaining);
+                }
+                else {
+                    return evenCutRet;
+                }
+                // return evenCut(r, remaining);
             }
 
             return packCut(r, remaining);
@@ -107,7 +114,14 @@ public class Party_stupid implements Party {
         else {
 
             if (alpha >= beta) {
-                return evenCut(r, remaining);
+                List<List<Block>> evenCutRet = evenCut(r, remaining);
+                if (!checkWin(evenCutRet)) {
+                    return packCut(r, remaining);
+                }
+                else {
+                    return evenCutRet;
+                }
+                // return evenCut(r, remaining);
             }
 
             return packCut(r, remaining);
@@ -116,52 +130,45 @@ public class Party_stupid implements Party {
 
     }
 
-    private List<Block> packChoose(List<List<Block>> districts) {
-        long mostOppVoters = -1;
-        List<Block> mostOppVotersDistrict = null;
+    private boolean checkWin(List<List<Block>> districts) {
         for (List<Block> district : districts) {
-            long oppVoters = 0;
-            for (Block block : district) {
-                oppVoters += _isBeta ? block.alpha() : block.beta();
+            long diff = 0;
+
+            // margin in district
+            for (Block b : district) {
+                diff += this._isBeta ? b.betaSwing() : -b.betaSwing();
             }
-            if (oppVoters > mostOppVoters) {
-                mostOppVoters = oppVoters;
-                mostOppVotersDistrict = district;
+
+            // if losing return false
+            if (diff < 0) {
+                return false;
             }
         }
-        return mostOppVotersDistrict;
+        return true;
     }
+    
 
     private List<Block> evenChoose(List<List<Block>> districts) {
         long closestWinMargin = -1;
         List<Block> closestWinDistrict = null;
         long furthestLossMargin = -1;
         List<Block> furthestLossDistrict = null;
-        long ourWin = Long.MAX_VALUE;
-        long oppWin = -1;
-    
         for (List<Block> district : districts) {
             long ourFavor = 0;
-            long ourVotes = 0;
-            long oppVotes = 0;
             for (Block block : district) {
                 ourFavor += _isBeta ? block.betaSwing() : -block.betaSwing();
-                ourVotes += _isBeta ? block.beta() : block.alpha();
-                oppVotes += _isBeta ? block.alpha() : block.beta();
             }
             // n.b. tiebreaks in favor of beta
-            if ((ourFavor > 0 || (ourFavor == 0 && _isBeta)) && ourVotes < ourWin) {
+            if (ourFavor > 0 || (ourFavor == 0 && _isBeta)) {
                 if (closestWinDistrict == null || closestWinMargin > ourFavor) {
                     closestWinMargin = ourFavor;
                     closestWinDistrict = district;
-                    ourWin = ourVotes;
                 }
-            } else if ((ourFavor < 0 || (ourFavor == 0 && !_isBeta)) && oppVotes > oppWin) {
+            } else {
                 // ourFavor is negative, so store the min
                 if (furthestLossDistrict == null || furthestLossMargin > ourFavor) {
                     furthestLossMargin = ourFavor;
                     furthestLossDistrict = district;
-                    oppWin = oppVotes;
                 }
             }
         }
@@ -172,33 +179,6 @@ public class Party_stupid implements Party {
     // the one we lose by
     // the largest)
     public List<Block> choose(List<List<Block>> districts) {
-        // int alpha = 0;
-        // int beta = 0;
-
-        // for (List<Block> b : districts) {
-        //     for (Block c : b) {
-        //         alpha += c.alpha();
-        //         beta += c.beta();
-
-        //     }
-        // }
-
-        // if (this._isBeta) {
-        //     if (beta >= alpha) {
-        //         return evenChoose(districts);
-        //     }
-        //     return packChoose(districts);
-
-        // }
-
-        // else {
-
-        //     if (alpha >= beta) {
-        //         return evenChoose(districts);
-        //     }
-
-        //     return packChoose(districts);
-        // }
         return evenChoose(districts);
     }
 
